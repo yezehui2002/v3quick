@@ -71,6 +71,12 @@ local sharedAnimationCache   = cc.AnimationCache:getInstance()
 
 -- check device screen size
 local glview = sharedDirector:getOpenGLView()
+if nil == glview then
+    glview = cc.GLViewImpl:createWithRect("QuickCocos", 
+        cc.rect(0, 0, CONFIG_SCREEN_WIDTH or 900, CONFIG_SCREEN_HEIGHT or 640))
+    sharedDirector:setOpenGLView(glview)
+end
+
 local size = glview:getFrameSize()
 display.sizeInPixels = {width = size.width, height = size.height}
 
@@ -429,7 +435,17 @@ Layer 对象提供了触摸事件、重力感应、Android 按键检测等功能
 
 ]]
 function display.newLayer()
-    return cc.Layer:create()
+    local layer
+
+    if cc.bPlugin_ then
+        layer = display.newNode()
+        layer:setContentSize(display.width, display.height)
+        layer:setTouchEnabled(true)
+    else
+        layer = cc.Layer:create()
+    end
+
+    return layer
 end
 
 --[[--
@@ -475,6 +491,11 @@ function display.newNode()
     return cc.Node:create()
 end
 
+if cc.ClippingRectangleNode then
+    cc.ClippingRegionNode = cc.ClippingRectangleNode
+else
+    cc.ClippingRectangleNode = cc.ClippingRegionNode
+end
 --[[--
 
 创建并返回一个 ClippingRegionNode 对象。
@@ -505,7 +526,11 @@ scene:addChild(clipnode)
 
 ]]
 function display.newClippingRegionNode(rect)
-    return cc.ClippingRegionNode:create(rect)
+    if rect then
+        return cc.ClippingRegionNode:create(rect)
+    else
+        return cc.ClippingRegionNode:create()
+    end
 end
 
 --[[--
@@ -631,7 +656,13 @@ local sprite = display.newScale9Sprite("Box.png", 0, 0, cc.size(400, 300))
 
 ]]
 function display.newScale9Sprite(filename, x, y, size, capInsets)
-    return display.newSprite(filename, x, y, {class = cc.Scale9Sprite, size = size, capInsets = capInsets})
+    local scale9sp
+    if cc.bPlugin_ then
+        scale9sp = ccui.Scale9Sprite
+    else
+        scale9sp = cc.Scale9Sprite
+    end
+    return display.newSprite(filename, x, y, {class = scale9sp, size = size, capInsets = capInsets})
 end
 
 --[[--
