@@ -1280,6 +1280,9 @@ function display.addImageAsync(imagePath, callback)
     sharedTextureCache:addImageAsync(imagePath, callback)
 end
 
+if not cc.SpriteFrameCache.addSpriteFrames then
+    cc.SpriteFrameCache.addSpriteFrames = cc.SpriteFrameCache.addSpriteFramesWithFile
+end
 --[[--
 
 将指定的 Sprite Sheets 材质文件及其数据文件载入图像帧缓存。

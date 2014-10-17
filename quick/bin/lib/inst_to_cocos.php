@@ -16,7 +16,7 @@ $options = array(
 			array(
 				"/templates/lua-template-default/frameworks/runtime-src/Classes/AppDelegate.cpp",
 				"// register_all_quick_manual(L);",
-				"register_all_quick_manual(L);",
+				"register_all_quick_manual(L);\n\tengine->getLuaStack()->loadChunksFromZIP(\"res/framework_quick.zip\");",
 				),
 		),
 );
