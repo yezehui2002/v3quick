@@ -37,6 +37,9 @@ c.TouchesOneByOne               = cc.TOUCHES_ONE_BY_ONE
 c.TOUCH_MODE_ALL_AT_ONCE        = c.TouchesAllAtOnce
 c.TOUCH_MODE_ONE_BY_ONE         = c.TouchesOneByOne
 
+local flagNodeTouchInCocos = false
+if Node.removeTouchEvent then flagNodeTouchInCocos = true end
+
 local function isPointIn( rc, pt )
     local rect = cc.rect(rc.x, rc.y, rc.width, rc.height)
     return cc.rectContainsPoint(rect, pt)
@@ -156,9 +159,219 @@ function Node:setNodeEventEnabled(enabled, listener)
 end
 
 function Node:setKeypadEnabled(enable)
-    self:setKeyboardEnabled(enable)
+    if not flagNodeTouchInCocos then
+        self:setKeyboardEnabled(enable)
+        return
+    end
+    
+    _enable = self._keyboardEnabled or false
+    if enable == _enable then
+        return self
+    end
+
+    self._keyboardEnabled = enable
+
+    if self.__key_event_handle__ then
+        local eventDispatcher = self:getEventDispatcher()
+        eventDispatcher:removeEventListener(self.__key_event_handle__)
+        self.__key_event_handle__ = nil
+    end
+
+    if enable then
+        local onKeyPressed = function ( keycode, event )
+            return self:EventDispatcher(c.KEYPAD_EVENT, {keycode, event, "Pressed"})
+        end
+
+        local onKeyReleased = function ( keycode, event )
+            return self:EventDispatcher(c.KEYPAD_EVENT, {keycode, event, "Released"})
+        end
+
+        local listener = cc.EventListenerKeyboard:create()
+        listener:registerScriptHandler(onKeyPressed, cc.Handler.EVENT_KEYBOARD_PRESSED )
+        listener:registerScriptHandler(onKeyReleased, cc.Handler.EVENT_KEYBOARD_RELEASED )
+        local eventDispatcher = self:getEventDispatcher()
+        eventDispatcher:addEventListenerWithSceneGraphPriority(listener, self)
+        self.__key_event_handle__ = listener
+    end
+
+    return self
 end
 
 function Node:isKeypadEnabled()
-    return self:isKeyboardEnabled()
+    if not flagNodeTouchInCocos then
+        return self:isKeyboardEnabled()
+    end
+    enable = self._keyboardEnabled or false
+    return enable
+end
+
+function Node:scheduleUpdate()
+    if not flagNodeTouchInCocos then
+        tolua.getcfunction(self, "scheduleUpdate")(self)
+        return
+    end
+
+    local listener = function (dt)
+        self:EventDispatcher(c.NODE_ENTER_FRAME_EVENT, dt)
+    end
+
+    self:scheduleUpdateWithPriorityLua(listener, 0) 
+end
+
+function Node:addNodeEventListener( evt, hdl, tag, priority )
+    if not flagNodeTouchInCocos then
+        tolua.getcfunction(self, "addNodeEventListener")(self, evt, hdl, tag, priority)
+        return
+    end
+
+    priority = priority or 0
+
+    if not self._scriptEventListeners_ then
+        self._scriptEventListeners_ = {}
+
+        local function baseNodeEventListener( evt )
+            -- print('----base Node Event: ' .. evt .. '(' .. tostring(self) .. ')')
+            self:EventDispatcher(c.NODE_EVENT, evt)
+        end
+
+        self:registerScriptHandler(baseNodeEventListener)
+    end
+    local luaListeners_ = self._scriptEventListeners_
+
+    local idx = self._nextScriptEventHandleIndex_ or 0
+    idx = idx + 1
+    self._nextScriptEventHandleIndex_ = idx
+
+    if not luaListeners_[evt] then
+        luaListeners_[evt] = {}
+    end
+    local eventListeners_ = luaListeners_[evt]
+    local lis = {
+            index_ = idx,
+            listener_ = hdl,
+            tag_ = tag,
+            priority_ = priority,
+            enable_ = true,
+            removed_ = false,
+        }
+    if evt==c.NODE_ENTER_FRAME_EVENT then
+        eventListeners_[1] = lis
+    else
+        table.insert(eventListeners_, lis)
+    end
+
+    return self._nextScriptEventHandleIndex_
+end
+
+function Node:removeNodeEventListenersByEvent( evt )
+    if not flagNodeTouchInCocos then
+        tolua.getcfunction(self, "removeNodeEventListenersByEvent")(self, evt)
+        return
+    end
+
+    if self._scriptEventListeners_ and self._scriptEventListeners_[evt] then
+        if evt==c.KEYPAD_EVENT then
+            self:setKeypadEnabled(false)
+        elseif evt==c.NODE_ENTER_FRAME_EVENT then
+            self:unscheduleUpdate()
+        elseif evt==c.NODE_TOUCH_EVENT then
+            self:removeTouchEvent()
+        elseif evt==c.NODE_TOUCH_CAPTURE_EVENT then
+            self:removeTouchEvent()
+        end
+
+        self._scriptEventListeners_[evt] = nil
+    end
+end
+
+function Node:removeAllNodeEventListeners()
+    if not flagNodeTouchInCocos then
+        tolua.getcfunction(self, "removeAllNodeEventListeners")(self)
+        return
+    end
+
+    self:removeNodeEventListenersByEvent(c.NODE_EVENT)
+    self:removeNodeEventListenersByEvent(c.NODE_ENTER_FRAME_EVENT)
+    self:removeNodeEventListenersByEvent(c.NODE_TOUCH_EVENT)
+    self:removeNodeEventListenersByEvent(c.NODE_TOUCH_CAPTURE_EVENT)
+    self:removeNodeEventListenersByEvent(c.KEYPAD_EVENT)
+end
+
+local function KeypadEventCodeConvert( code )
+    return tostring(code)
+end
+
+function Node:EventDispatcher( idx, data )
+    -- if idx~=1 then
+    --     print("-----Entry Node:EventDispatcher: "..idx)
+    -- end
+    local obj = self
+    local flagNodeCleanup = false
+    local event
+    local touch_event = nil
+    if idx==c.NODE_EVENT then
+        event = { name=data }
+        if data=="cleanup" then
+            flagNodeCleanup = true
+        end
+    elseif idx==c.NODE_ENTER_FRAME_EVENT then
+        event = data
+    elseif idx==c.KEYPAD_EVENT then
+        local code = data[1]
+        -- local evt = data[2]
+        local ename = data[3]
+        if ename~='Released' then return true end
+        event = { code=code, key=KeypadEventCodeConvert(code), }
+    else
+        event = data
+        -- dump(event)
+        touch_event = event
+    end
+
+    local rnval = false
+    if idx==cc.NODE_TOUCH_CAPTURE_EVENT then
+        rnval = true
+    end
+    local flagNeedClean = false
+    local listener
+    if obj._scriptEventListeners_ then
+        listener = obj._scriptEventListeners_[idx]
+    end
+    if listener then
+        for i,v in ipairs(listener) do
+            if v.removed_ then
+                flagNeedClean = true
+            else
+                if touch_event and touch_event.name=="began" then
+                    v.enable_ = true
+                end
+
+                if v.enable_ then
+                    listenerRet = v.listener_(event)
+                    if not listenerRet then
+                        if idx==cc.NODE_TOUCH_CAPTURE_EVENT then
+                            local evtname  = event.name
+                            if (evtname=="began") or (evtname=="moved") then
+                                rnval = false
+                            end
+                        elseif idx==cc.NODE_TOUCH_EVENT then
+                            if event.name=="began" then
+                                v.enable_ = false
+                            end
+                            rnval = rnval or listenerRet
+                        else
+                            rnval = rnval or listenerRet
+                        end
+                    end 
+                end
+            end
+        end
+    end
+
+    if flagNodeCleanup then 
+        obj:removeAllNodeEventListeners() 
+        self:unregisterScriptHandler()
+    end
+
+    return rnval
 end

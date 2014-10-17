@@ -36,6 +36,7 @@ local CURRENT_MODULE_NAME = ...
 cc.Registry   = import(".Registry")
 cc.GameObject = import(".GameObject")
 cc.EventProxy = import(".EventProxy")
+cc.Component  = import(".components.Component")
 
 -- init components
 local components = {
@@ -73,4 +74,4 @@ cc.ui = import(".ui.init")
 -- cc.share = import(".share.init").new()
 -- cc.feedback = import(".feedback.init").new()
 -- cc.update = import(".update.init").new()
-cc.uiloader = import(".uiloader.init").new()
+cc.uiloader = import(".uiloader.init")
