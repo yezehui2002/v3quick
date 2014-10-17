@@ -142,7 +142,13 @@ function UIInput.newEditBox_(params)
         imageDisabled = display.newScale9Sprite(imageDisabled)
     end
 
-    local editbox = cc.EditBox:create(params.size, imageNormal, imagePressed, imageDisabled)
+    local editboxCls
+    if cc.bPlugin_ then
+        editboxCls = ccui.EditBox
+    else
+        editboxCls = cc.EditBox
+    end
+    local editbox = editboxCls:create(params.size, imageNormal, imagePressed, imageDisabled)
 
     if editbox then
         if params.listener then
@@ -157,7 +163,13 @@ function UIInput.newEditBox_(params)
 end
 
 function UIInput.newTextField_(params)
-    local editbox = cc.TextField:create()
+    local textfieldCls
+    if cc.bPlugin_ then
+        textfieldCls = ccui.TextField
+    else
+        textfieldCls = cc.TextField
+    end
+    local editbox = textfieldCls:create()
     editbox:setPlaceHolder(params.placeHolder)
     editbox:setPosition(params.x, params.y)
     if params.listener then
@@ -167,7 +179,11 @@ function UIInput.newTextField_(params)
         editbox:setTextAreaSize(params.size)
     end
     if params.text then
-        editbox:setText(params.text)
+        if editbox.setString then
+            editbox:setString(params.text)
+        else
+            editbox:setText(params.text)
+        end
     end
     if params.font then
         editbox:setFontName(params.font)

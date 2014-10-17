@@ -8,6 +8,14 @@ function CCSUILoader:load(json, params)
 	else
 		self.bUseEditBox = false
 	end
+
+	if cc.bPlugin_ and self.bUseEditBox then
+		-- CCEditbox(C++ widget) not support no background
+		self.bUseEditBox = false
+
+		print("Error! not support CCEditbox in cocostudio layout file")
+	end
+
 	-- local fileUtil = cc.FileUtils:getInstance()
 	-- local fullPath = fileUtil:fullPathForFilename(jsonFile)
 	-- local jsonStr = fileUtil:getStringFromFile(fullPath)
@@ -652,13 +660,17 @@ function CCSUILoader:createPanel(options)
 	if 1 == options.colorType then
 		-- single color
 		clrLayer = cc.LayerColor:create()
-		clrLayer:resetCascadeBoundingBox()
+		if not cc.bPlugin_ then
+			clrLayer:resetCascadeBoundingBox()
+		end
 		clrLayer:setTouchEnabled(false)
 		clrLayer:setColor(cc.c3b(options.bgColorR, options.bgColorG, options.bgColorB))
 	elseif 2 == options.colorType then
 		-- gradient
 		clrLayer = cc.LayerGradient:create()
-		clrLayer:resetCascadeBoundingBox()
+		if not cc.bPlugin_ then
+			clrLayer:resetCascadeBoundingBox()
+		end
 		clrLayer:setTouchEnabled(false)
 		clrLayer:setStartColor(cc.c3b(options.bgStartColorR, options.bgStartColorG, options.bgStartColorB))
 		clrLayer:setEndColor(cc.c3b(options.bgEndColorR, options.bgEndColorG, options.bgEndColorB))
