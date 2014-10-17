@@ -11,6 +11,14 @@ $options = array(
 			array("/quick/samples/coinflip/res", "/res"),
 			array("/quick/samples/coinflip/src", "/src"),
 		),
+
+	"FilesNeedModify" => array(
+			array(
+				"/templates/lua-template-default/frameworks/runtime-src/Classes/AppDelegate.cpp",
+				"// register_all_quick_manual(L);",
+				"register_all_quick_manual(L);",
+				),
+		),
 );
 
 function check_cocos_ver()

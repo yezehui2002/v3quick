@@ -107,10 +107,41 @@ class QuickInstaller
     	}
     }
 
+    private function modifyFiles()
+    {
+        $files = $this->options["FilesNeedModify"];
+        foreach ($files as $file) 
+        {
+            $src = $this->cocosPath . $file[0];
+            printf("modify file \"%s\" ... ", $src);
+            $contents = file_get_contents($src);
+            if ($contents == false)
+            {
+                printf("ERROR: file_get_contents failure\n");
+                return false;
+            }
+            // $stat = stat($src);
+
+            $contents = str_replace($file[1], $file[2], $contents);
+
+            if (file_put_contents($src, $contents) == false)
+            {
+                printf("ERROR: file_put_contents failure\n");
+                return false;
+            }
+            // chmod($dest, $stat['mode']);
+
+            printf("OK\n");
+        }
+
+        return true;
+    }
+
     function run()
     {
     	$this->cleanupTemplate();
     	$this->copyFilesToTemplate();
+        $this->modifyFiles();
     	return 0;
     }
 
