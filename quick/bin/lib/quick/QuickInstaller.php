@@ -4,12 +4,14 @@ require_once(__DIR__ . '/init.php');
 
 class QuickInstaller
 {
+	private $options;
 	private $quickPath;
 	private $cocosPath;
 	private $defaultTemplatePath;
 
-    function __construct($quickPath, $cocosPath)
+    function __construct($quickPath, $cocosPath, $options)
     {
+    	$this->options = $options;
         $this->quickPath = $quickPath;
         $this->cocosPath = $cocosPath;
         $this->defaultTemplatePath = $cocosPath . "/templates/lua-template-default";
@@ -27,15 +29,88 @@ class QuickInstaller
         }
     }
 
+    private function copyFile($src, $dest)
+    {
+        printf("create file \"%s\" ... ", $dest);
+        $destinationDir = pathinfo($dest, PATHINFO_DIRNAME);
+
+        if (!is_dir($destinationDir))
+        {
+            mkdir($destinationDir, 0777, true);
+        }
+        if (!is_dir($destinationDir))
+        {
+            printf("ERROR: mkdir failure\n");
+            return false;
+        }
+
+        $contents = file_get_contents($src);
+        if ($contents == false)
+        {
+            printf("ERROR: file_get_contents failure\n");
+            return false;
+        }
+        $stat = stat($src);
+
+        // foreach ($this->vars as $key => $value)
+        // {
+        //     $contents = str_replace($key, $value, $contents);
+        // }
+
+        if (file_put_contents($dest, $contents) == false)
+        {
+            printf("ERROR: file_put_contents failure\n");
+            return false;
+        }
+        chmod($dest, $stat['mode']);
+
+        printf("OK\n");
+        return true;
+    }
+
     private function cleanupTemplate()
     {
         $this->cleanDir($this->defaultTemplatePath . '/res');
         $this->cleanDir($this->defaultTemplatePath . '/src');
     }
 
+    private function copyFilesToTemplate()
+    {
+    	$files = $this->options["FilesCopyToTemplate"];
+    	foreach ($files as $key => $file) 
+    	{
+    		$src = $this->quickPath . $file[2] . '/' . $file[0];
+    		$dest = $this->defaultTemplatePath . $file[3] . '/';
+    		if ($file[1]) 
+    		{
+    			$dest = $dest . $file[1];
+    		}
+    		else
+    		{
+    			$dest = $dest . $file[0];
+    		}
+    		$this->copyFile($src, $dest);
+    	}
+
+    	$pathes = $this->options["PathesCopyToTemplate"];
+    	foreach ($pathes as $path)
+    	{
+    		$srcPath = $this->quickPath . $path[0];
+	        $dstPath = $this->defaultTemplatePath . $path[1];
+	        $files = array();
+	        findFiles($srcPath, $files);
+	        foreach ($files as $src) 
+	        {
+	    		$dest = str_replace($srcPath, $dstPath, $src);
+	    		$this->copyFile($src, $dest);
+	        }
+    	}
+    }
+
     function run()
     {
     	$this->cleanupTemplate();
+    	$this->copyFilesToTemplate();
     	return 0;
     }
 

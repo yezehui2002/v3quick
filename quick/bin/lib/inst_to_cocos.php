@@ -2,6 +2,17 @@
 
 require_once(__DIR__ . '/quick/QuickInstaller.php');
 
+$options = array(
+	"FilesCopyToTemplate" => array(
+			array("framework_precompiled.zip", "framework_quick.zip", "/quick/lib/framework_precompiled", "/res"),
+		),
+
+	"PathesCopyToTemplate" => array(
+			array("/quick/samples/coinflip/res", "/res"),
+			array("/quick/samples/coinflip/src", "/src"),
+		),
+);
+
 function check_cocos_ver()
 {
 	$cocos_path = $_ENV['COCOS_CONSOLE_ROOT'];
@@ -43,7 +54,7 @@ if (!$quick_root_path)
 	return -1;
 }
 
-$installer = new QuickInstaller($quick_root_path, $cocos_root_path);
+$installer = new QuickInstaller($quick_root_path, $cocos_root_path, $options);
 
 $retval = $installer->run();
 
