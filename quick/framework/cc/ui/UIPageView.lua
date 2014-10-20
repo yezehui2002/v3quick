@@ -109,6 +109,52 @@ function UIPageView:addItem(item)
 	return self
 end
 
+
+--[[--
+
+移除一项
+
+@param number idx 要移除项的序号
+
+@return UIPageView
+]]
+function UIPageView:removeItem(item)
+	local itemIdx
+	for i,v in ipairs(self.items_) do
+		if v == item then
+			itemIdx = i
+		end
+	end
+
+	if not itemIdx then
+		print("ERROR! item isn't exist")
+		return self
+	end
+
+	if itemIdx then
+		table.remove(self.items_, itemIdx)
+	end
+
+	self:reload(self.curPageIdx_)
+
+	return self
+end
+
+--[[--
+
+移除所有页面
+
+@return UIPageView
+
+]]
+function UIPageView:removeAllItems()
+	self.items_ = {}
+
+	self:reload(self.curPageIdx_)
+
+	return self
+end
+
 --[[--
 
 注册一个监听函数
@@ -128,25 +174,50 @@ end
 
 加载数据，各种参数
 
+@param number page index加载完成后,首先要显示的页面序号,为空从第一页开始显示
+
 @return UIPageView
 
 ]]
-function UIPageView:reload()
+function UIPageView:reload(idx)
 	local page
+	local pageCount
 	self.pages_ = {}
 
-	self.curPageIdx_ = 1
-	if self:getPageCount() > 0 then
-		for i = 1, self:getPageCount() do
+	-- retain all items
+	for i,v in ipairs(self.items_) do
+		v:retain()
+	end
+
+	self:removeAllChildren()
+
+	pageCount = self:getPageCount()
+	if pageCount < 1 then
+		return self
+	end
+
+	if pageCount > 0 then
+		for i = 1, pageCount do
 			page = self:createPage_(i)
 			page:setVisible(false)
 			table.insert(self.pages_, page)
 			self:addChild(page)
 		end
+	end
 
-		self.pages_[1]:setVisible(true)
-		self.pages_[1]:setPosition(
-			self.viewRect_.x, self.viewRect_.y)
+	if not idx or idx < 1 then
+		idx = 1
+	elseif idx > pageCount then
+		idx = pageCount
+	end
+	self.curPageIdx_ = idx
+	self.pages_[idx]:setVisible(true)
+	self.pages_[idx]:setPosition(
+		self.viewRect_.x, self.viewRect_.y)
+
+	-- release all items
+	for i,v in ipairs(self.items_) do
+		v:release()
 	end
 
 	return self
@@ -633,6 +704,8 @@ function UIPageView:onClick_(event)
 			break
 		end
 	end
+
+	clickIdx = clickIdx + (self.column_ * self.row_) * (self.curPageIdx_ - 1)
 
 	self:notifyListener_{name = "clicked",
 		item = self.items_[clickIdx],
