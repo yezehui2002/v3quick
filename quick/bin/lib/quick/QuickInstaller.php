@@ -14,7 +14,7 @@ class QuickInstaller
     	$this->options = $options;
         $this->quickPath = $quickPath;
         $this->cocosPath = $cocosPath;
-        $this->defaultTemplatePath = $cocosPath . "/templates/lua-template-default";
+        $this->defaultTemplatePath = $cocosPath . "/templates/lua-template-runtime";
     }
 
     private function cleanDir($path)

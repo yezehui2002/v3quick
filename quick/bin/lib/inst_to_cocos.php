@@ -29,7 +29,8 @@ function check_cocos_ver()
 		return;
 	}
 
-	$pos = strpos($cocos_path, '/tools/cocos2d-console/bin');
+	$consoleDir = DS . 'tools' . DS . 'cocos2d-console' . DS . 'bin';
+	$pos = strpos($cocos_path, $consoleDir);
 	if ($pos != false)
 	{
 		$cocos_path = substr($cocos_path, 0, $pos);
