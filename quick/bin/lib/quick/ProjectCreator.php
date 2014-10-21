@@ -64,13 +64,14 @@ class ProjectCreator
         // check output path
         if (empty($this->config['output']))
         {
-            $this->config['output'] = rtrim(getcwd(), '/\\') . DS . $lastname . DS;
+            $this->config['output'] = rtrim(getcwd(), '/\\') . DS;
         }
         else
         {
             $this->config['output'] = rtrim($this->config['output'], '/\\') . DS;
         }
-        if (!$this->config['force'] && (is_dir($this->config['output']) || file_exists($this->config['output'])))
+        $output_path = $this->config['output'] . $lastname . DS; 
+        if (!$this->config['force'] && (is_dir($output_path) || file_exists($output_path)))
         {
             printf("ERROR: project path \"%s\" exists\n", $this->config['output']);
             return false;
