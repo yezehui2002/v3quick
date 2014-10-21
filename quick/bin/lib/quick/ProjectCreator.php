@@ -157,8 +157,11 @@ class ProjectCreator
             $this->vars['__SCREEN_ORIENTATION_IOS__'] = '<string>UIInterfaceOrientationPortrait</string>';
         }
 
+        $quick_path = __DIR__ . "/../../../..";
+        $cocos_path = file_get_contents($quick_path . "/.COCOS_ROOT_PATH");
+        $consoleDir = $cocos_path . DS . 'tools' . DS . 'cocos2d-console' . DS . 'bin';
         // call cocos to create new project
-        $cmd_str = "cocos new " . $this->vars['__PROJECT_PACKAGE_LAST_NAME__']
+        $cmd_str = $consoleDir . "/cocos new " . $this->vars['__PROJECT_PACKAGE_LAST_NAME__']
                     . " -p " . $this->vars['__PROJECT_PACKAGE_FULL_NAME__']
                     . " -l lua -t quick -d " . $this->vars['__PROJECT_PATH__'];
         if ($this->config['extracmd'])
