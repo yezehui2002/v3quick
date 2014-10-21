@@ -7,14 +7,18 @@ class QuickInstaller
 	private $options;
 	private $quickPath;
 	private $cocosPath;
+    private $cocosTemplatePath;
 	private $defaultTemplatePath;
+    private $quickTemplatePath;
 
     function __construct($quickPath, $cocosPath, $options)
     {
     	$this->options = $options;
         $this->quickPath = $quickPath;
         $this->cocosPath = $cocosPath;
-        $this->defaultTemplatePath = $cocosPath . "/templates/lua-template-runtime";
+        $this->cocosTemplatePath = $cocosPath . "/templates";
+        $this->defaultTemplatePath = $this->cocosTemplatePath . "/lua-template-quick";
+        $this->quickTemplatePath = $this->quickPath . "/quick/templates/lua-template-quick";
     }
 
     private function cleanDir($path)
@@ -68,10 +72,28 @@ class QuickInstaller
         return true;
     }
 
+    private function copyDir($srcPath, $dstPath)
+    {
+        $files = array();
+        findFiles($srcPath, $files);
+        foreach ($files as $src) 
+        {
+            $dest = str_replace($srcPath, $dstPath, $src);
+            $this->copyFile($src, $dest);
+        }
+    }
+
     private function cleanupTemplate()
     {
         $this->cleanDir($this->defaultTemplatePath . '/res');
         $this->cleanDir($this->defaultTemplatePath . '/src');
+    }
+
+    private function copyTemplate()
+    {
+        $srcPath = $this->quickTemplatePath;
+        $dstPath = $this->defaultTemplatePath;
+        $this->copyDir($srcPath, $dstPath);
     }
 
     private function copyFilesToTemplate()
@@ -139,7 +161,8 @@ class QuickInstaller
 
     function run()
     {
-    	$this->cleanupTemplate();
+    	// $this->cleanupTemplate();
+        $this->copyTemplate();
     	$this->copyFilesToTemplate();
         $this->modifyFiles();
     	return 0;
