@@ -161,6 +161,7 @@ class QuickInstaller
 
     function run()
     {
+        file_put_contents($this->quickPath . "/.COCOS_ROOT_PATH", $this->cocosPath);
     	// $this->cleanupTemplate();
         $this->copyTemplate();
     	$this->copyFilesToTemplate();
