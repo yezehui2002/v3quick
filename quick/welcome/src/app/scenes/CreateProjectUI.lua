@@ -179,6 +179,25 @@ function CreateProjectUI:onEnter()
                 end
                 local arguments = " -p " .. packageEditbox:getText() .. " -f " .. " -o " .. self.projectFolder .. screenDirection
                 local taskId = tostring(os.time())
+
+                -- local scriptPath = cc.player.quickRootPath .. "cocos new"
+
+                -- local screenDirection = "-r portrait"
+                -- if self.landscapeCheckBox:isButtonSelected() then
+                --     projectConfig:changeFrameOrientationToLandscape()
+                --     screenDirection = "-r landscape"
+                -- end
+
+                -- local cmds = {}
+                -- table.insert(cmds, "-l lua")
+                -- table.insert(cmds, "-t quick")
+                -- table.insert(cmds, "-d " .. self.projectFolder)
+                -- table.insert(cmds, "-p " .. packageEditbox:getText())
+                -- table.insert(cmds, screenDirection)
+
+                -- local arguments = table.concat(cmds, " ")
+                -- arguments = " " .. arguments
+                
                 local task = PlayerProtocol:getInstance():getTaskService():createTask(taskId, scriptPath, arguments)
                 eventDispatcher:addEventListenerWithFixedPriority(cc.EventListenerCustom:create(taskId,
                             function()
