@@ -24,16 +24,16 @@ class ProjectCreator
             printf("ERROR: invalid template path \"%s\"\n", $templatePath);
             return false;
         }
-        if (!file_exists($templatePath . 'TEMPLATE_INFO.json'))
+        if (!file_exists($templatePath . 'cocos-project-template.json'))
         {
-            printf("ERROR: not found TEMPLATE_INFO.json in template path \"%s\"\n", $templatePath);
+            printf("ERROR: not found cocos-project-template.json in template path \"%s\"\n", $templatePath);
             return false;
         }
-        $info = file_get_contents($templatePath . 'TEMPLATE_INFO.json');
+        $info = file_get_contents($templatePath . 'cocos-project-template.json');
         $info = json_decode($info, true);
-        if (!is_array($info) || empty($info['name']))
+        if (!is_array($info) || empty($info['do_default']))
         {
-            printf("ERROR: invalid TEMPLATE_INFO.json in template path \"%s\"\n", $templatePath);
+            printf("ERROR: invalid cocos-project-template.json in template path \"%s\"\n", $templatePath);
             return false;
         }
         $this->config['template'] = $templatePath;
@@ -151,28 +151,34 @@ class ProjectCreator
             $this->vars['__SCREEN_ORIENTATION_IOS__'] = '<string>UIInterfaceOrientationPortrait</string>';
         }
 
+        // call cocos to create new project
+        $cmd_str = "cocos new " . $this->vars['__PROJECT_PACKAGE_LAST_NAME__']
+                    . " -p " . $this->vars['__PROJECT_PACKAGE_FULL_NAME__']
+                    . " -l lua -t quick -d " . $this->vars['__PROJECT_PATH__'];
+        $this->exec_sys_cmd($cmd_str);
+
         // copy files
-        $paths = $this->getPaths($this->config['template']);
-        foreach ($paths as $sourcePath)
-        {
-            $sourceFilename = substr($sourcePath, strlen($this->config['template']));
-            if ($sourceFilename == 'TEMPLATE_INFO.json') continue;
-            if ($this->config['noproj'])
-            {
-                if (substr($sourceFilename, 0, 5) == 'proj.' || substr($sourceFilename, 0, 8) == 'sources/')
-                {
-                    continue;
-                }
-            }
-            else if ($this->config['onlyproj'])
-            {
-                if (substr($sourceFilename, 0, 5) != 'proj.' && substr($sourceFilename, 0, 8) != 'sources/' && substr($sourceFilename, 0, 10) != 'run-mac.sh' )
-                {
-                    continue;
-                }
-            }
-            if (!$this->copyFile($sourcePath)) return false;
-        }
+        // $paths = $this->getPaths($this->config['template']);
+        // foreach ($paths as $sourcePath)
+        // {
+        //     $sourceFilename = substr($sourcePath, strlen($this->config['template']));
+        //     if ($sourceFilename == 'TEMPLATE_INFO.json') continue;
+        //     if ($this->config['noproj'])
+        //     {
+        //         if (substr($sourceFilename, 0, 5) == 'proj.' || substr($sourceFilename, 0, 8) == 'sources/')
+        //         {
+        //             continue;
+        //         }
+        //     }
+        //     else if ($this->config['onlyproj'])
+        //     {
+        //         if (substr($sourceFilename, 0, 5) != 'proj.' && substr($sourceFilename, 0, 8) != 'sources/' && substr($sourceFilename, 0, 10) != 'run-mac.sh' )
+        //         {
+        //             continue;
+        //         }
+        //     }
+        //     if (!$this->copyFile($sourcePath)) return false;
+        // }
 
         print("\n\n");
 
@@ -259,6 +265,14 @@ class ProjectCreator
         }
         closedir($dh);
         return $files;
+    }
+
+    function exec_sys_cmd($cmd_str)
+    {
+        echo "exec: $cmd_str\n";
+        system($cmd_str, $retval);
+        echo "*******************\n";
+        return $retval;
     }
 
 }
