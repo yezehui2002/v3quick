@@ -51,7 +51,7 @@ using namespace std;
 using namespace cocos2d;
 
 std::string g_resourcePath;
-static std::string g_projectPath;
+std::string g_projectPath;
 
 //1M size 
 #define MAXPROTOLENGTH 1048576
@@ -71,7 +71,7 @@ const char* getRuntimeVersion()
     return "1.4";
 }
 
-static string& replaceAll(string& str, const string& old_value, const string& new_value)
+string& replaceAll(string& str, const string& old_value, const string& new_value)
 {
     size_t start = 0;
     while(true)
@@ -1167,7 +1167,7 @@ tolua_lerror:
     return 0;
 }
 
-static void register_runtime_override_function(lua_State* tolua_S)
+void register_runtime_override_function(lua_State* tolua_S)
 {
     lua_pushstring(tolua_S, "cc.FileUtils");
     lua_rawget(tolua_S, LUA_REGISTRYINDEX);
