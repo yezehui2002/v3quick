@@ -93,6 +93,11 @@ class ProjectCreator
             return false;
         }
 
+        if ($this->options['extracmd'])
+        {
+            $this->config['extracmd'] = $this->options['extracmd'];
+        }
+
         if (!$this->config['quiet'])
         {
             dumpConfig($this->config, $this->options);
@@ -156,6 +161,10 @@ class ProjectCreator
         $cmd_str = "cocos new " . $this->vars['__PROJECT_PACKAGE_LAST_NAME__']
                     . " -p " . $this->vars['__PROJECT_PACKAGE_FULL_NAME__']
                     . " -l lua -t quick -d " . $this->vars['__PROJECT_PATH__'];
+        if ($this->config['extracmd'])
+        {
+            $cmd_str = $cmd_str . ' ' . str_replace('#', ' ', $this->config['extracmd']);
+        }
         $this->exec_sys_cmd($cmd_str);
 
         // copy files

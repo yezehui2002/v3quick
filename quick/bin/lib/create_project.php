@@ -13,6 +13,7 @@ $options = array(
     array('c',   'config',      1,      null,        'load options from config file'),
     array('q',   'quiet',       0,      false,       'quiet'),
     array('t',   'template',    1,      '',          'template dir'),
+    array('e',   'extracmd',    1,      null,        'extra cmd for cocos'),
 );
 
 function errorhelp()
