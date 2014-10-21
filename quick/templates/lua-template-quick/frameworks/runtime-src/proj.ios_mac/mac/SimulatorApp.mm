@@ -79,26 +79,9 @@ std::string getCurAppName(void)
 
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    NSArray *args = [[NSProcessInfo processInfo] arguments];
-
-    if (args!=nullptr && [args count]>=2) {
-        extern std::string g_resourcePath;
-        g_resourcePath = [[args objectAtIndex:1]UTF8String];
-        if (g_resourcePath.at(0) != '/') {
-            g_resourcePath="";
-        }
-    }
-    g_nsAppDelegate =self;
-    AppDelegate app;
-    NSArray *nsargs = [[NSProcessInfo processInfo] arguments];
-    long n = [nsargs count];
-    if (n > 3)
-    {
-        app.setLaunchMode(1);
-    }
-    Application::getInstance()->run();
-    // After run, application needs to be terminated immediately.
-    [[NSApplication sharedApplication] terminate: self];
+    [self updateProjectFromCommandLineArgs:&_project];
+    _project.setShowConsole(true);
+    [self startup];
 }
 
 
@@ -123,15 +106,15 @@ std::string getCurAppName(void)
     auto director = Director::getInstance();
     director->setOpenGLView(g_eglView);
 
-    window = glfwGetCocoaWindow(g_eglView->getWindow());
+    _window = glfwGetCocoaWindow(g_eglView->getWindow());
     [[NSApplication sharedApplication] setDelegate: self];
     
     [self createViewMenu];
     [self updateMenu];
-    [window center];
+    [_window center];
     
-    [window becomeFirstResponder];
-    [window makeKeyAndOrderFront:self];
+    [_window becomeFirstResponder];
+    [_window makeKeyAndOrderFront:self];
 }
 
 void createSimulator(const char* viewName, float width, float height,bool isLandscape,float frameZoomFactor)
@@ -153,10 +136,104 @@ void createSimulator(const char* viewName, float width, float height,bool isLand
     
 }
 
+- (void) updateProjectFromCommandLineArgs:(ProjectConfig*)config
+{
+    NSArray *nsargs = [[NSProcessInfo processInfo] arguments];
+    long n = [nsargs count];
+    if (n >= 2)
+    {
+        vector<string> args;
+        for (int i = 0; i < [nsargs count]; ++i)
+        {
+            string arg = [[nsargs objectAtIndex:i] cStringUsingEncoding:NSUTF8StringEncoding];
+            if (arg.length()) args.push_back(arg);
+        }
+        config->parseCommandLine(args);
+    }
+    
+    if (config->getProjectDir().length() == 0)
+    {
+        config->resetToWelcome();
+    }
+}
+
+- (void) startup
+{
+    if (_project.isShowConsole())
+    {
+        [self openConsoleWindow];
+    }
+    
+    NSArray *args = [[NSProcessInfo processInfo] arguments];
+    
+    if (args!=nullptr && [args count]>=2) {
+        extern std::string g_resourcePath;
+        g_resourcePath = [[args objectAtIndex:1]UTF8String];
+        if (g_resourcePath.at(0) != '/') {
+            g_resourcePath="";
+        }
+    }
+    g_nsAppDelegate =self;
+    AppDelegate app;
+    NSArray *nsargs = [[NSProcessInfo processInfo] arguments];
+    long n = [nsargs count];
+    if (n > 3)
+    {
+        app.setLaunchMode(1);
+    }
+    Application::getInstance()->run();
+    // After run, application needs to be terminated immediately.
+    [[NSApplication sharedApplication] terminate: self];
+}
+
+- (void) openConsoleWindow
+{
+    if (!_consoleController)
+    {
+        _consoleController = [[ConsoleWindowController alloc] initWithWindowNibName:@"ConsoleWindow"];
+    }
+    [_consoleController.window orderFrontRegardless];
+    
+    //set console pipe
+    _pipe = [NSPipe pipe] ;
+    _pipeReadHandle = [_pipe fileHandleForReading] ;
+
+    int outfd = [[_pipe fileHandleForWriting] fileDescriptor];
+    if (dup2(outfd, fileno(stderr)) != fileno(stderr) || dup2(outfd, fileno(stdout)) != fileno(stdout))
+    {
+        perror("Unable to redirect output");
+//                [self showAlert:@"Unable to redirect output to console!" withTitle:@"player error"];
+    }
+    else
+    {
+        [[NSNotificationCenter defaultCenter] addObserver: self
+                                                 selector: @selector(handleNotification:)
+                                                     name: NSFileHandleReadCompletionNotification
+                                                   object: _pipeReadHandle] ;
+        [_pipeReadHandle readInBackgroundAndNotify] ;
+    }
+}
+
+- (void)handleNotification:(NSNotification *)note
+{
+    //NSLog(@"Received notification: %@", note);
+    [_pipeReadHandle readInBackgroundAndNotify] ;
+    NSData *data = [[note userInfo] objectForKey:NSFileHandleNotificationDataItem];
+    NSString *str = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+    
+    //show log to console
+    [_consoleController trace:str];
+    if(_fileHandle != nil)
+    {
+        [_fileHandle writeData:[str dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    
+}
+
 - (void) createViewMenu
 {
     
-    NSMenu *submenu = [[[window menu] itemWithTitle:@"View"] submenu];
+    NSMenu *submenu = [[[_window menu] itemWithTitle:@"View"] submenu];
 
     for (int i = ConfigParser::getInstance()->getScreenSizeCount() - 1; i >= 0; --i)
     {
@@ -173,7 +250,7 @@ void createSimulator(const char* viewName, float width, float height,bool isLand
 - (void) updateMenu
 {
 
-    NSMenu *menuScreen = [[[window menu] itemWithTitle:@"View"] submenu];
+    NSMenu *menuScreen = [[[_window menu] itemWithTitle:@"View"] submenu];
     NSMenuItem *itemPortait = [menuScreen itemWithTitle:@"Portait"];
     NSMenuItem *itemLandscape = [menuScreen itemWithTitle:@"Landscape"];
     if (g_landscape)
@@ -187,15 +264,15 @@ void createSimulator(const char* viewName, float width, float height,bool isLand
         [itemLandscape setState:NSOffState];
     }
     
-    NSMenu *menuControl = [[[window menu] itemWithTitle:@"Control"] submenu];
+    NSMenu *menuControl = [[[_window menu] itemWithTitle:@"Control"] submenu];
     NSMenuItem *itemTop = [menuControl itemWithTitle:@"Keep Window Top"];
     if (g_windTop) {
-        [window setLevel:NSFloatingWindowLevel];
+        [_window setLevel:NSFloatingWindowLevel];
         [itemTop setState:NSOnState];
     }
     else
     {
-        [window setLevel:NSNormalWindowLevel];
+        [_window setLevel:NSNormalWindowLevel];
         [itemTop setState:NSOffState];
     }
 
@@ -301,13 +378,14 @@ void createSimulator(const char* viewName, float width, float height,bool isLand
 
 - (IBAction) onScreenPortait:(id)sender
 {
+    if ([sender state] == NSOnState) return;
     g_landscape = false;
     [self updateView];
-
 }
 
 - (IBAction) onScreenLandscape:(id)sender
 {
+    if ([sender state] == NSOnState) return;
     g_landscape = true;
     [self updateView];
 }

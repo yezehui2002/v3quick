@@ -24,18 +24,25 @@
 
 
 #include <string>
+#import "ConsoleWindowController.h"
+#include "ProjectConfig/ProjectConfig.h"
 #include "AppDelegate.h"
 
 void createSimulator(const char* viewName, float width, float height,bool isLandscape = true,float frameZoomFactor = 1.0f);
 
 @interface AppController : NSObject <NSApplicationDelegate, NSWindowDelegate>
 {
-    NSWindow *window;
-    NSMenu *menu;
-    NSFileHandle *fileHandle;
+    NSWindow *_window;
+    NSMenu *_menu;
+    ProjectConfig _project;
+    
+    //log file
+    ConsoleWindowController *_consoleController;
+    NSFileHandle *_fileHandle;
+    
     //console pipe
-    NSPipe *pipe;
-    NSFileHandle *pipeReadHandle;
+    NSPipe *_pipe;
+    NSFileHandle *_pipeReadHandle;
 }
 
 @property (nonatomic, assign) IBOutlet NSMenu* menu;
