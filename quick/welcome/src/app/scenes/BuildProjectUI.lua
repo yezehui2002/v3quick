@@ -86,7 +86,8 @@ function BuildProjectUI:createUI()
             :setButtonLabel(cc.ui.UILabel.new({text = "Android", color = display.COLOR_BLACK}))
             :setButtonLabelOffset(20, 0)
             :align(display.LEFT_CENTER))
-        :addButton(cc.ui.UICheckBoxButton.new(radioImages)
+    if "ios" == device.platform or "mac" == device.platform then
+        group:addButton(cc.ui.UICheckBoxButton.new(radioImages)
             :setButtonLabel(cc.ui.UILabel.new({text = "IOS", color = display.COLOR_BLACK}))
             :setButtonLabelOffset(20, 0)
             :align(display.LEFT_CENTER))
@@ -94,20 +95,22 @@ function BuildProjectUI:createUI()
             :setButtonLabel(cc.ui.UILabel.new({text = "Mac", color = display.COLOR_BLACK}))
             :setButtonLabelOffset(20, 0)
             :align(display.LEFT_CENTER))
-        :addButton(cc.ui.UICheckBoxButton.new(radioImages)
+    elseif "windows" == device.platform then
+        group:addButton(cc.ui.UICheckBoxButton.new(radioImages)
             :setButtonLabel(cc.ui.UILabel.new({text = "Win32", color = display.COLOR_BLACK}))
             :setButtonLabelOffset(20, 0)
             :align(display.LEFT_CENTER))
-        :addButton(cc.ui.UICheckBoxButton.new(radioImages)
-            :setButtonLabel(cc.ui.UILabel.new({text = "Linux", color = display.COLOR_BLACK}))
-            :setButtonLabelOffset(20, 0)
-            :align(display.LEFT_CENTER))
+    end
+        -- :addButton(cc.ui.UICheckBoxButton.new(radioImages)
+        --     :setButtonLabel(cc.ui.UILabel.new({text = "Linux", color = display.COLOR_BLACK}))
+        --     :setButtonLabelOffset(20, 0)
+        --     :align(display.LEFT_CENTER))
         -- :addButton(cc.ui.UICheckBoxButton.new(radioImages)
         --     :setButtonLabel(cc.ui.UILabel.new({text = "web", color = display.COLOR_BLACK}))
         --     :setButtonEnabled(false)
         --     :setButtonLabelOffset(25, 0)
         --     :align(display.LEFT_CENTER))
-        :setButtonsLayoutMargin(10, 80, 10, 10)
+    group:setButtonsLayoutMargin(10, 80, 10, 10)
         :onButtonSelectChanged(function(event)
         	if not self.platformNode_ then
         		return
@@ -121,15 +124,17 @@ function BuildProjectUI:createUI()
         		self.androidArgsPanel_:setVisible(true)
         		self.cmdArgs_.platform = "android"
         	elseif 2 == event.selected then
-        		self.IOSArgsPanel_:setVisible(true)
-        		self.cmdArgs_.platform = "ios"
+        		if "windows" == device.platform then
+        			self.cmdArgs_.platform = "win32"
+        		else
+	        		self.IOSArgsPanel_:setVisible(true)
+	        		self.cmdArgs_.platform = "ios"
+	        	end
         	elseif 3 == event.selected then
         		self.MacArgsPanel_:setVisible(true)
         		self.cmdArgs_.platform = "mac"
         	elseif 4 == event.selected then
         		self.cmdArgs_.platform = "win32"
-        	elseif 5 == event.selected then
-        		self.cmdArgs_.platform = "linux"
         	end
         end)
         :align(display.LEFT_BOTTOM, posX, posY)
@@ -239,8 +244,13 @@ function BuildProjectUI:createUI()
 
 	self.androidArgsPanel_:setVisible(true)
 
+	-- back button
+	self:addButton("Back", display.left + 20, 10, function(event)
+		self:removeFromParent(true)
+    	end)
+
 	-- compile button
-	self:addButton("Compile", display.right - 170, 10, function(event)
+	self.compileBtn = self:addButton("Compile", display.right - 170, 10, function(event)
 		if Utilitys.stringIsNull(self.projDirTF_:getText()) then
 			print("project directory is nil")
 			return
@@ -289,7 +299,7 @@ function BuildProjectUI:addButton(text, posX, posY, listener)
 	}
 	local fontSize = 25
 
-	cc.ui.UIPushButton.new(images, {scale9 = true})
+	local btn = cc.ui.UIPushButton.new(images, {scale9 = true})
 	    :setButtonSize(150, 40)
 	    :setButtonLabel("normal", cc.ui.UILabel.new({
 	            text = text,
@@ -297,6 +307,8 @@ function BuildProjectUI:addButton(text, posX, posY, listener)
 	    :align(display.LEFT_BOTTOM, posX, posY)
 	    :addTo(self)
 	    :onButtonClicked(listener)
+
+	return btn
 end
 
 function BuildProjectUI:addEncryptArgs()
@@ -450,10 +462,13 @@ function BuildProjectUI:runCompile()
                 function()
                 	print("compile finish result:" .. task:getResultCode())
                 	print("compile finish info:" .. tostring(task:getOutput()))
+                	self.compileBtn:setButtonLabelString("normal", "Compile")
                 end),
                1)
     task:run()
-    messageBox:showMessageBox("player v3", "Compile...")
+    messageBox:showMessageBox("player v3",
+    	"Compile...\r\n Please wait for minutes \r\n Compile command \r\n cocos compile " .. strCmd)
+    self.compileBtn:setButtonLabelString("normal", "Processing ...")
 end
 
 function BuildProjectUI:addOutputFromPath(projDir)
