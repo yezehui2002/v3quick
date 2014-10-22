@@ -1,10 +1,10 @@
 {
     "init_cfg":{
-       "isLandscape": true,
+       "isLandscape": __SCREEN_ORIENTATION_CONFIG_JSON__,
        "isWindowTop": false,
        "name": "HelloLua",
-       "width": 960,
-       "height": 640,
+       "width": __SCREEN_WIDTH__,
+       "height": __SCREEN_HEIGHT__,
        "entry": "src/main.lua",
        "consolePort": 6010,
        "uploadPort": 6020
