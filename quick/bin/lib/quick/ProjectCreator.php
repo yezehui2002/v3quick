@@ -68,7 +68,17 @@ class ProjectCreator
         }
         else
         {
-            $this->config['output'] = rtrim($this->config['output'], '/\\') . DS;
+            $output_path = rtrim($this->config['output'], '/\\');
+            $pos = strripos($output_path, $lastname);
+            if ($pos!=false)
+            {
+                $lastnameLen = strlen($lastname);
+                if ($pos+$lastnameLen==strlen($output_path))
+                {
+                    $output_path = substr($output_path, 0, $pos);
+                }
+            }
+            $this->config['output'] = $output_path . DS;
         }
         $output_path = $this->config['output'] . $lastname . DS; 
         if (!$this->config['force'] && (is_dir($output_path) || file_exists($output_path)))
