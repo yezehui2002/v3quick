@@ -57,16 +57,6 @@ function string:splitBySep(sep)
     return fields
 end
 
--- cjson
-local cjson
-local function safeLoad()
-    cjson = require("cjson")
-end
-
-if not pcall(safeLoad) then
-    cjson = nil
-end
-
 --
 -- save player setting to ~/.quick_player.lua
 --
@@ -228,9 +218,9 @@ function player:registerEventHandler()
     -- for app event
     local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
     local event = function(e)
-        local status, data = pcall(cjson.decode, e:getDataString())
-        if not status then return end
+        if not json then return end
 
+        data = json.decode(e:getDataString())
         if data.name == "menuClicked" then
             self:onMenuClicked(data)
         end

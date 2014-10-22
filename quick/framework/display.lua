@@ -72,7 +72,7 @@ local sharedAnimationCache   = cc.AnimationCache:getInstance()
 -- check device screen size
 local glview = sharedDirector:getOpenGLView()
 if nil == glview then
-    glview = cc.GLViewImpl:createWithRect("QuickCocos", 
+    glview = cc.GLViewImpl:createWithRect("QuickCocos",
         cc.rect(0, 0, CONFIG_SCREEN_WIDTH or 900, CONFIG_SCREEN_HEIGHT or 640))
     sharedDirector:setOpenGLView(glview)
 end
@@ -109,7 +109,7 @@ if CONFIG_SCREEN_AUTOSCALE and CONFIG_SCREEN_AUTOSCALE ~="NONE" then
         CONFIG_SCREEN_WIDTH = w
         CONFIG_SCREEN_HEIGHT = h
         scale = 1.0
-        glview:setDesignResolutionSize(CONFIG_SCREEN_WIDTH, CONFIG_SCREEN_HEIGHT, cc.ResolutionPolicy.FILL_ALL)
+        glview:setDesignResolutionSize(CONFIG_SCREEN_WIDTH, CONFIG_SCREEN_HEIGHT, cc.ResolutionPolicy.NO_BORDER)
     else
         if not scaleX or not scaleY then
             scaleX, scaleY = w / CONFIG_SCREEN_WIDTH, h / CONFIG_SCREEN_HEIGHT
