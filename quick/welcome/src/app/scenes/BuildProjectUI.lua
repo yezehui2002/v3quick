@@ -11,6 +11,8 @@ function BuildProjectUI:ctor(args)
 	self.cmdArgs_.projDir = args.projDir
 	self.cmdArgs_.platform = "android"
 	self.cmdArgs_.mode = "debug"
+	self.cmdArgs_.compileRes = true
+	self.cmdArgs_.compileScr = true
 
 	self.cmdArgs_.outputDir = self:addOutputFromPath(self.cmdArgs_.projDir)
 
@@ -171,6 +173,7 @@ function BuildProjectUI:createUI()
         :setButtonLabelOffset(25, 0)
         :setButtonLabelAlignment(display.LEFT_CENTER)
         :align(display.LEFT_CENTER, posX, posY)
+        :setButtonSelected(true)
         :addTo(self)
         :onButtonStateChanged(function(event)
         	if "on" == event.state then
@@ -185,6 +188,7 @@ function BuildProjectUI:createUI()
         :setButtonLabelOffset(25, 0)
         :setButtonLabelAlignment(display.LEFT_CENTER)
         :align(display.LEFT_CENTER, posX + spaceW, posY)
+        :setButtonSelected(true)
         :addTo(self)
         :onButtonStateChanged(function(event)
         	if "on" == event.state then
