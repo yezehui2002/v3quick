@@ -32,6 +32,10 @@ hellolua/Runtime_android.cpp \
 ../../Classes/AppDelegate.cpp \
 ../../Classes/ConfigParser.cpp
 
+#anysdk
+LOCAL_SRC_FILES += \
+../../Classes/anysdkbindings.cpp \
+../../Classes/anysdk_manual_bindings.cpp
 
 LOCAL_C_INCLUDES := \
 $(LOCAL_PATH)/../../Classes/protobuf-lite \
@@ -40,6 +44,14 @@ $(LOCAL_PATH)/../../Classes \
 $(LOCAL_PATH)/../../../cocos2d-x/external \
 $(LOCAL_PATH)/../../Classes/quick-src \
 $(LOCAL_PATH)/../../Classes/quick-src/extra
+
+#anysdk
+LOCAL_C_INCLUDES +=	\
+$(LOCAL_PATH)/../protocols/android \
+$(LOCAL_PATH)/../protocols/include
+
+#anysdk
+LOCAL_WHOLE_STATIC_LIBRARIES += PluginProtocolStatic
 
 LOCAL_STATIC_LIBRARIES := cocos2d_lua_static
 LOCAL_STATIC_LIBRARIES += lua_extensions_static
@@ -52,4 +64,6 @@ $(call import-module,scripting/lua-bindings/proj.android)
 $(call import-module, ../runtime-src/Classes/quick-src/lua_extensions)
 $(call import-module, ../runtime-src/Classes/quick-src/extra)
 
+#anysdk
+$(call import-module,protocols/android)
 
