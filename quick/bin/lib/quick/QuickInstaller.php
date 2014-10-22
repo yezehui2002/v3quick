@@ -159,9 +159,54 @@ class QuickInstaller
         return true;
     }
 
-    function run()
+    private function setEnvFiles()
     {
         file_put_contents($this->quickPath . "/.COCOS_ROOT_PATH", $this->cocosPath);
+        $quickBinPath = $this->quickPath . "/quick/bin";
+
+        $sh_str = "#!/bin/bash\n";
+        $bat_str = "@echo off\n";
+
+        // $tmpstr = $this->quickPath;
+        // $sh_str = $sh_str . "export QUICK_V3_ROOT=" . $tmpstr . "\n";
+        // $bat_str = $bat_str . "set QUICK_V3_ROOT=" . $tmpstr . "\n";
+
+        $tmpstr = $_ENV['COCOS_CONSOLE_ROOT'];
+        if ($tmpstr) 
+        {
+            $sh_str = $sh_str . "export COCOS_CONSOLE_ROOT=" . $tmpstr . "\n";
+            $bat_str = $bat_str . "set COCOS_CONSOLE_ROOT=" . $tmpstr . "\n";
+        }
+        $tmpstr = $_ENV['ANDROID_SDK_ROOT'];
+        if ($tmpstr) 
+        {
+            $sh_str = $sh_str . "export ANDROID_SDK_ROOT=" . $tmpstr . "\n";
+            $bat_str = $bat_str . "set ANDROID_SDK_ROOT=" . $tmpstr . "\n";
+        }
+        $tmpstr = $_ENV['NDK_ROOT'];
+        if ($tmpstr) 
+        {
+            $sh_str = $sh_str . "export NDK_ROOT=" . $tmpstr . "\n";
+            $bat_str = $bat_str . "set NDK_ROOT=" . $tmpstr . "\n";
+        }
+        $tmpstr = $_ENV['ANT_ROOT'];
+        if ($tmpstr) 
+        {
+            $sh_str = $sh_str . "export ANT_ROOT=" . $tmpstr . "\n";
+            $bat_str = $bat_str . "set ANT_ROOT=" . $tmpstr . "\n";
+        }
+
+        $fileSetEnv = $quickBinPath . "/_setenv.sh";
+        file_put_contents($fileSetEnv, $sh_str);
+        chmod($fileSetEnv, 0755);
+        $fileSetEnv = $quickBinPath . "/_setenv.bat";
+        file_put_contents($fileSetEnv, $bat_str);
+        chmod($fileSetEnv, 0755);
+    }
+
+    function run()
+    {
+        $this->setEnvFiles();
     	// $this->cleanupTemplate();
         $this->copyTemplate();
     	$this->copyFilesToTemplate();

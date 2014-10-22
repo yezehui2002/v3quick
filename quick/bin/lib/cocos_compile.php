@@ -1,8 +1,9 @@
 <?php
 
-$quick_path = __DIR__ . "/../../..";
-$cocos_path = file_get_contents($quick_path . "/.COCOS_ROOT_PATH");
-$consoleDir = $cocos_path . '/tools/cocos2d-console/bin';
+// $quick_path = __DIR__ . "/../../..";
+// $cocos_path = file_get_contents($quick_path . "/.COCOS_ROOT_PATH");
+// $consoleDir = $cocos_path . '/tools/cocos2d-console/bin';
+$consoleDir = $_ENV['COCOS_CONSOLE_ROOT'];
 // call cocos to compile
 $cmd_str = $consoleDir . "/cocos compile";
 $i = 1;
