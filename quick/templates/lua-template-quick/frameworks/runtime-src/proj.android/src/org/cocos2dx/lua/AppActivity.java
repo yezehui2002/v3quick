@@ -50,6 +50,7 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
+import com.anysdk.framework.PluginWrapper;
 
 
 public class AppActivity extends Cocos2dxActivity{
@@ -92,6 +93,9 @@ public class AppActivity extends Cocos2dxActivity{
 			}
 		}
 		hostIPAdress = getHostIpAddress();
+
+        //for anysdk
+        PluginWrapper.init(this); // for plugins
 	}
 	private boolean isNetworkConnected() {
 	        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);  
@@ -123,7 +127,28 @@ public class AppActivity extends Cocos2dxActivity{
 	public static String getLocalIpAddress() {
 		return hostIPAdress;
 	}
-	
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        PluginWrapper.onActivityResult(requestCode, resultCode, data);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PluginWrapper.onResume();
+    }
+    @Override
+    public void onPause(){
+        PluginWrapper.onPause();
+        super.onPause();
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        PluginWrapper.onNewIntent(intent);
+        super.onNewIntent(intent);
+    }
+
 	private static native boolean nativeIsLandScape();
 	private static native boolean nativeIsDebug();
 	

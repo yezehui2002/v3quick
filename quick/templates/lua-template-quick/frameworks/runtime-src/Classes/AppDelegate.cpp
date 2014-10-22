@@ -16,8 +16,8 @@
 #include "luabinding/cocos2dx_extra_ios_iap_luabinding.h"
 #endif
 #if ANYSDK_DEFINE > 0
-#include "anysdk/src/lua_anysdk_auto.hpp"
-#include "anysdk/src/lua_anysdk_manual.hpp"
+#include "anysdkbindings.h"
+#include "anysdk_manual_bindings.h"
 #endif
 
 using namespace CocosDenshion;
@@ -89,12 +89,14 @@ bool AppDelegate::applicationDidFinishLaunching()
     luaopen_cocos2dx_extra_ios_iap_luabinding(L);
 #endif
 
+    LuaStack* stack = engine->getLuaStack();
 #if ANYSDK_DEFINE > 0
-    register_all_anysdk(L);
-    register_all_anysdk_manual(L);
+    lua_getglobal(stack->getLuaState(), "_G");
+    tolua_anysdk_open(stack->getLuaState());
+    tolua_anysdk_manual_open(stack->getLuaState());
+    lua_pop(stack->getLuaState(), 1);
 #endif
 
-    LuaStack* stack = engine->getLuaStack();
     stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));
 
     //register custom function
