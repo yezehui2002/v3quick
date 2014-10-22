@@ -37,10 +37,19 @@ LOCAL_C_INCLUDES := \
 $(LOCAL_PATH)/../../Classes/protobuf-lite \
 $(LOCAL_PATH)/../../Classes/runtime \
 $(LOCAL_PATH)/../../Classes \
-$(LOCAL_PATH)/../../../cocos2d-x/external
+$(LOCAL_PATH)/../../../cocos2d-x/external \
+$(LOCAL_PATH)/../../Classes/quick-src \
+$(LOCAL_PATH)/../../Classes/quick-src/extra
 
 LOCAL_STATIC_LIBRARIES := cocos2d_lua_static
+LOCAL_STATIC_LIBRARIES += lua_extensions_static
+LOCAL_STATIC_LIBRARIES += extra_static
 
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,scripting/lua-bindings/proj.android)
+
+$(call import-module, ../runtime-src/Classes/quick-src/lua_extensions)
+$(call import-module, ../runtime-src/Classes/quick-src/extra)
+
+

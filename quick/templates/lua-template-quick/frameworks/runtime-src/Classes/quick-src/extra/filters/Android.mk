@@ -38,14 +38,7 @@ endif
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) \
                            $(LOCAL_PATH)/..
 
-LOCAL_C_INCLUDES := $(LOCAL_EXPORT_C_INCLUDES) \
-                    $(COCOS2DX_CORE)/ \
-                    $(COCOS2DX_CORE)/platform \
-                    $(COCOS2DX_CORE)/platform/android \
-                    $(QUICK_V3_LIB)/ \
-                    $(COCOS2DX_ROOT)/ \
-                    $(COCOS2DX_ROOT)/external \
-                    $(COCOS2DX_ROOT)/extensions 
+LOCAL_C_INCLUDES := $(LOCAL_EXPORT_C_INCLUDES)
 
 
 LOCAL_CFLAGS := -Wno-psabi -DUSE_FILE32API -DCC_LUA_ENGINE_ENABLED=1 $(ANDROID_COCOS2D_BUILD_FLAGS) -std=c++11
