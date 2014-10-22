@@ -18,6 +18,26 @@ $options = array(
 			// 	"// register_all_quick_manual(L);",
 			// 	"register_all_quick_manual(L);\n\tengine->getLuaStack()->loadChunksFromZIP(\"res/framework_quick.zip\");",
 			// 	),
+			array(
+				"/external/lua/quick/LuaEventNode.h",
+				"class CC_DLL LuaEventNode",
+				"class LuaEventNode",
+				),
+			array(
+				"/external/lua/quick/LuaNodeManager.h",
+				"class CC_DLL LuaNodeManager",
+				"class LuaNodeManager",
+				),
+			array(
+				"/external/lua/quick/LuaTouchEventManager.h",
+				"class CC_DLL LuaTouchEventManager",
+				"class LuaTouchEventManager",
+				),
+			array(
+				"/external/lua/quick/LuaTouchTargetNode.h",
+				"class CC_DLL LuaTouchTargetNode",
+				"class LuaTouchTargetNode",
+				),
 		),
 );
 
