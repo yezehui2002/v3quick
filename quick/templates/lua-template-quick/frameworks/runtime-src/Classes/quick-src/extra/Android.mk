@@ -17,6 +17,31 @@ LOCAL_SRC_FILES := \
     $(LOCAL_PATH)/platform/android/CCNativeAndroid.cpp \
     $(LOCAL_PATH)/platform/android/CCNetworkAndroid.cpp
 
+
+#filters
+LOCAL_SRC_FILES += \
+    $(LOCAL_PATH)/luabinding/lua_cocos2dx_extension_filter_auto.cpp \
+    $(LOCAL_PATH)/filters/filters/CCFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCBlurFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCBrightnessFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCContrastFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCDropShadowFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCExposureFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCGammaFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCGrayFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCHazeFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCHueFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCMaskFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCRGBFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCSaturationFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCSepiaFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCSharpenFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCTestFilter.cpp \
+    $(LOCAL_PATH)/filters/filters/CCCustomFilter.cpp \
+    $(LOCAL_PATH)/filters/nodes/CCFilteredSprite.cpp \
+    $(LOCAL_PATH)/filters/shaders/ccFilterShaders.cpp 
+
+
 ifeq ($(ANYSDK_DEFINE),1)
 LOCAL_SRC_FILES += \
     $(LOCAL_PATH)/anysdk/src/AnySDKListener.cpp \
@@ -26,36 +51,21 @@ endif
 
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) \
-                           $(LOCAL_PATH)/luabinding/ \
-                           $(QUICK_V3_LIB)/lua_bindings/manual
+                           $(LOCAL_PATH)/luabinding
 
 LOCAL_C_INCLUDES := $(LOCAL_EXPORT_C_INCLUDES) \
-                    $(COCOS2DX_CORE) \
-                    $(COCOS2DX_CORE)/platform \
-                    $(COCOS2DX_CORE)/platform/android \
-                    $(COCOS2DX_ROOT)/external \
-                    $(COCOS2DX_ROOT)/external/unzip \
-                    $(COCOS2DX_ROOT)/external/xxtea \
-                    $(COCOS2DX_ROOT)/external/curl/include/android \
-                    $(QUICK_V3_LIB) \
-                    $(QUICK_V3_LIB)/lua_bindings/luajit/include \
-                    $(QUICK_V3_LIB)/lua_bindings/tolua \
-                    $(COCOS2DX_ROOT) \
-                    $(COCOS2DX_ROOT)/extensions \
-                    $(QUICK_V3_LIB)/extra/anysdk/protocols/include \
-                    $(COCOS2DX_ROOT)/external/json
+                    $(LOCAL_PATH)/../../../../cocos2d-x/cocos \
+                    $(LOCAL_PATH)/../../../../cocos2d-x/external/lua/luajit/include \
+                    $(LOCAL_PATH)/../../../../cocos2d-x/external/lua/tolua \
+                    $(LOCAL_PATH)/../../../../cocos2d-x/external \
+                    $(LOCAL_PATH)/../../../../cocos2d-x/cocos/scripting/lua-bindings/manual
+
+#filters
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../../cocos2d-x/extensions
 
 
 
-LOCAL_CFLAGS := -Wno-psabi -DUSE_FILE32API -DCC_LUA_ENGINE_ENABLED=1 $(ANDROID_COCOS2D_BUILD_FLAGS) -std=c++11
-LOCAL_EXPORT_CFLAGS := -Wno-psabi -DUSE_FILE32API -DCC_LUA_ENGINE_ENABLED=1
 
-ifeq ($(CC_USE_CURL),1)
-LOCAL_WHOLE_STATIC_LIBRARIES += cocos_curl_static
-endif
 
 include $(BUILD_STATIC_LIBRARY)
 
-ifeq ($(CC_USE_CURL),1)
-$(call import-module,curl/prebuilt/android)
-endif
