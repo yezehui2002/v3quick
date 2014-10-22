@@ -128,7 +128,7 @@ function findFiles($dir, array & $files)
 
     while (($file = readdir($dh)) !== false)
     {
-        if ($file{0} == '.') { continue; }
+        if ($file == '.' || $file == '..') { continue; }
 
         $path = $dir . $file;
         if (is_dir($path))
