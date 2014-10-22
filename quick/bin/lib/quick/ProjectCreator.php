@@ -157,9 +157,19 @@ class ProjectCreator
             $this->vars['__SCREEN_ORIENTATION_IOS__'] = '<string>UIInterfaceOrientationPortrait</string>';
         }
 
-        $quick_path = __DIR__ . "/../../../..";
-        $cocos_path = file_get_contents($quick_path . "/.COCOS_ROOT_PATH");
-        $consoleDir = $cocos_path . DS . 'tools' . DS . 'cocos2d-console' . DS . 'bin';
+        if ($this->config['orientation'] == 'landscape')
+        {
+            $this->vars['__SCREEN_ORIENTATION_CONFIG_JSON__'] = 'true';
+        }
+        else
+        {
+            $this->vars['__SCREEN_ORIENTATION_CONFIG_JSON__'] = 'false';
+        }
+
+        // $quick_path = __DIR__ . "/../../../..";
+        // $cocos_path = file_get_contents($quick_path . "/.COCOS_ROOT_PATH");
+        // $consoleDir = $cocos_path . DS . 'tools' . DS . 'cocos2d-console' . DS . 'bin';
+        $consoleDir = $_ENV['COCOS_CONSOLE_ROOT'];
         // call cocos to create new project
         $cmd_str = $consoleDir . "/cocos new " . $this->vars['__PROJECT_PACKAGE_LAST_NAME__']
                     . " -p " . $this->vars['__PROJECT_PACKAGE_FULL_NAME__']
@@ -192,6 +202,8 @@ class ProjectCreator
         //     }
         //     if (!$this->copyFile($sourcePath)) return false;
         // }
+
+        $this->modifyFiles();
 
         print("\n\n");
 
@@ -288,4 +300,43 @@ class ProjectCreator
         return $retval;
     }
 
+    function modifyFiles()
+    {
+        $projectPath = $this->vars['__PROJECT_PATH__'] . $this->vars['__PROJECT_PACKAGE_LAST_NAME__'] . DS;
+        $files = array();
+        findFiles($projectPath, $files);
+        foreach ($files as $src) 
+        {
+            $contents = file_get_contents($src);
+            if ($contents == false)
+            {
+                continue;
+            }
+            $flagReplace = false;
+            foreach ($this->vars as $key => $value)
+            {
+                $pos = strpos($contents, $key);
+                if ($pos==false)
+                {
+                    continue;
+                }
+                $contents = str_replace($key, $value, $contents);
+                $flagReplace = true;
+            }
+            if (!$flagReplace)
+            {
+                continue;
+            }
+            printf("modify file \"%s\" ... ", $src);
+            $stat = stat($src);
+            if (file_put_contents($src, $contents) == false)
+            {
+                printf("ERROR: file_put_contents failure\n");
+                continue;
+            }
+            chmod($src, $stat['mode']);
+
+            printf("OK\n");
+        }
+    }
 }

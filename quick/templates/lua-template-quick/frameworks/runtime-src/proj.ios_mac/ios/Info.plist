@@ -147,8 +147,7 @@
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
+		__SCREEN_ORIENTATION_IOS__
 	</array>
 </dict>
 </plist>
