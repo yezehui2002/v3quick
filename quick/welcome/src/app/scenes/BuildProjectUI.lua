@@ -445,12 +445,15 @@ function BuildProjectUI:runCompile()
 	local taskId = tostring(os.time())
     local task = PlayerProtocol:getInstance():getTaskService():createTask(taskId, scriptPath, strCmd)
     local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+    local messageBox = PlayerProtocol:getInstance():getMessageBoxService()
     eventDispatcher:addEventListenerWithFixedPriority(cc.EventListenerCustom:create(taskId,
                 function()
-                	print("compile task result code:" .. task:getResultCode())
+                	print("compile finish result:" .. task:getResultCode())
+                	print("compile finish info:" .. tostring(task:getOutput()))
                 end),
                1)
     task:run()
+    messageBox:showMessageBox("player v3", "Compile...")
 end
 
 function BuildProjectUI:addOutputFromPath(projDir)
