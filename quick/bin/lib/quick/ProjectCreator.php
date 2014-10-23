@@ -64,24 +64,28 @@ class ProjectCreator
         // check output path
         if (empty($this->config['output']))
         {
-            $this->config['output'] = rtrim(getcwd(), '/\\') . DS;
+            $curpath = rtrim(getcwd(), '/\\');
+            $this->config['output'] = $curpath . DS . $lastname . DS;
+            $this->config['cocos_output'] = $curpath;
+            $this->config['cocos_project'] = $lastname;
         }
         else
         {
-            $output_path = rtrim($this->config['output'], '/\\');
-            $pos = strripos($output_path, $lastname);
-            if ($pos!=false)
+            $outpath = rtrim($this->config['output'], '/\\');
+            $this->config['output'] = $outpath . DS;
+            $pos = strrpos($outpath, DS);
+            if ($pos != false)
             {
-                $lastnameLen = strlen($lastname);
-                if ($pos+$lastnameLen==strlen($output_path))
-                {
-                    $output_path = substr($output_path, 0, $pos);
-                }
+                $this->config['cocos_output'] = substr($outpath, 0, $pos);
+                $this->config['cocos_project'] = substr($outpath, $pos+1);
             }
-            $this->config['output'] = $output_path . DS;
+            else
+            {
+                $this->config['cocos_output'] = $outpath;
+                $this->config['cocos_project'] = $lastname;
+            }
         }
-        $output_path = $this->config['output'] . $lastname . DS; 
-        if (!$this->config['force'] && (is_dir($output_path) || file_exists($output_path)))
+        if (!$this->config['force'] && (is_dir($this->config['output']) || file_exists($this->config['output'])))
         {
             printf("ERROR: project path \"%s\" exists\n", $this->config['output']);
             return false;
@@ -125,12 +129,12 @@ class ProjectCreator
         }
 
         // create project dir
-        if (!is_dir($this->config['output'])) mkdir($this->config['output']);
-        if (!is_dir($this->config['output']))
-        {
-            printf("ERROR: create project dir \"%s\" failure\n", $this->config['output']);
-            return false;
-        }
+        // if (!is_dir($this->config['output'])) mkdir($this->config['output']);
+        // if (!is_dir($this->config['output']))
+        // {
+        //     printf("ERROR: create project dir \"%s\" failure\n", $this->config['output']);
+        //     return false;
+        // }
 
         // prepare contents
         $this->vars['__TEMPLATE_PATH__'] = $this->config['template'];
@@ -181,9 +185,9 @@ class ProjectCreator
         // $consoleDir = $cocos_path . DS . 'tools' . DS . 'cocos2d-console' . DS . 'bin';
         $consoleDir = $_ENV['COCOS_CONSOLE_ROOT'];
         // call cocos to create new project
-        $cmd_str = $consoleDir . "/cocos new " . $this->vars['__PROJECT_PACKAGE_LAST_NAME__']
+        $cmd_str = $consoleDir . "/cocos new " . $this->config['cocos_project']
                     . " -p " . $this->vars['__PROJECT_PACKAGE_FULL_NAME__']
-                    . " -l lua -t quick -d " . $this->vars['__PROJECT_PATH__'];
+                    . " -l lua -t quick -d " . $this->config['cocos_output'];
         if ($this->config['extracmd'])
         {
             $cmd_str = $cmd_str . ' ' . str_replace('#', ' ', $this->config['extracmd']);
@@ -312,7 +316,7 @@ class ProjectCreator
 
     function modifyFiles()
     {
-        $projectPath = $this->vars['__PROJECT_PATH__'] . $this->vars['__PROJECT_PACKAGE_LAST_NAME__'] . DS;
+        $projectPath = $this->config['output'];
         $files = array();
         findFiles($projectPath, $files);
         foreach ($files as $src) 
