@@ -19,6 +19,7 @@ public:
 
     virtual bool run();
     virtual void stop();
+    virtual void runInTerminal();
 
     // check task status
     virtual void update(float dt);

@@ -456,19 +456,7 @@ function BuildProjectUI:runCompile()
 
 	local taskId = tostring(os.time())
     local task = PlayerProtocol:getInstance():getTaskService():createTask(taskId, scriptPath, strCmd)
-    local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
-    local messageBox = PlayerProtocol:getInstance():getMessageBoxService()
-    eventDispatcher:addEventListenerWithFixedPriority(cc.EventListenerCustom:create(taskId,
-                function()
-                	print("compile finish result:" .. task:getResultCode())
-                	print("compile finish info:" .. tostring(task:getOutput()))
-                	self.compileBtn:setButtonLabelString("normal", "Compile")
-                end),
-               1)
-    task:run()
-    messageBox:showMessageBox("player v3",
-    	"Compile...\r\n Please wait for minutes \r\n Compile command \r\n cocos compile " .. strCmd)
-    self.compileBtn:setButtonLabelString("normal", "Processing ...")
+    task:runInTerminal()
 end
 
 function BuildProjectUI:addOutputFromPath(projDir)

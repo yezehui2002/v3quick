@@ -201,6 +201,7 @@ class PlayerTask : public cocos2d::Ref
 
     bool run();
     void stop();
+    void runInTerminal();
 };
 
 class PlayerTaskServiceProtocol : public PlayerServiceProtocol
