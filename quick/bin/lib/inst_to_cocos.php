@@ -19,6 +19,11 @@ $options = array(
 			// 	"register_all_quick_manual(L);\n\tengine->getLuaStack()->loadChunksFromZIP(\"res/framework_quick.zip\");",
 			// 	),
 			array(
+				"/cocos/platform/win32/CCFileUtils-win32.cpp",
+				's_resourcePath.append("/");',
+				's_resourcePath.append("/../../");',
+				),
+			array(
 				"/external/lua/quick/LuaEventNode.h",
 				"class CC_DLL LuaEventNode",
 				"class LuaEventNode",
