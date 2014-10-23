@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "stdafx.h"
+#include "shellapi.h"
 #include "PlayerTaskServiceWin.h"
 
 PLAYER_NS_BEGIN
@@ -113,6 +114,20 @@ bool PlayerTaskWin::run()
 
     cocos2d::Director::getInstance()->getScheduler()->scheduleUpdate(this, 0, false);
     return true;
+}
+
+void PlayerTaskWin::runInTerminal()
+{
+	std::stringstream buf;
+	buf << "/K ";
+	buf << _executePath;
+	buf << " ";
+	buf << _commandLineArguments;
+
+	std::u16string u16command;
+	cocos2d::StringUtils::UTF8ToUTF16(buf.str(), u16command);
+
+	ShellExecute(NULL, NULL, L"CMD.EXE", (WCHAR*)u16command.c_str(), NULL, SW_SHOWNORMAL);
 }
 
 void PlayerTaskWin::stop()

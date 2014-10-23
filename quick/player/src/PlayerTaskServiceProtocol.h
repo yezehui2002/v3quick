@@ -32,6 +32,7 @@ public:
 
     virtual bool run() = 0;
     virtual void stop() = 0;
+    virtual void runInTerminal() = 0;
 
 protected:
     PlayerTask(const std::string &name,

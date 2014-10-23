@@ -1,6 +1,6 @@
 /*
 ** Lua binding: PlayerLuaCore
-** Generated automatically by tolua++-1.0.92 on Sat Oct 11 15:46:29 2014.
+** Generated automatically by tolua++-1.0.92 on Thu Oct 23 13:59:16 2014.
 */
 
 #include "PlayerLuaCore.h"
@@ -3478,6 +3478,37 @@ static int tolua_PlayerLuaCore_PlayerTask_stop00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: runInTerminal of class  PlayerTask */
+#ifndef TOLUA_DISABLE_tolua_PlayerLuaCore_PlayerTask_runInTerminal00
+static int tolua_PlayerLuaCore_PlayerTask_runInTerminal00(lua_State* tolua_S)
+{
+#if COCOS2D_DEBUG >= 1
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"PlayerTask",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  PlayerTask* self = (PlayerTask*)  tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'runInTerminal'", NULL);
+#endif
+  {
+   self->runInTerminal();
+  }
+ }
+ return 0;
+#if COCOS2D_DEBUG >= 1
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'runInTerminal'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: createTask of class  PlayerTaskServiceProtocol */
 #ifndef TOLUA_DISABLE_tolua_PlayerLuaCore_PlayerTaskServiceProtocol_createTask00
 static int tolua_PlayerLuaCore_PlayerTaskServiceProtocol_createTask00(lua_State* tolua_S)
@@ -3911,6 +3942,7 @@ TOLUA_API int tolua_PlayerLuaCore_open (lua_State* tolua_S)
    tolua_function(tolua_S,"getResultCode",tolua_PlayerLuaCore_PlayerTask_getResultCode00);
    tolua_function(tolua_S,"run",tolua_PlayerLuaCore_PlayerTask_run00);
    tolua_function(tolua_S,"stop",tolua_PlayerLuaCore_PlayerTask_stop00);
+   tolua_function(tolua_S,"runInTerminal",tolua_PlayerLuaCore_PlayerTask_runInTerminal00);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"PlayerTaskServiceProtocol","PlayerTaskServiceProtocol","PlayerServiceProtocol",NULL);
   tolua_beginmodule(tolua_S,"PlayerTaskServiceProtocol");
