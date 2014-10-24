@@ -158,6 +158,18 @@ function Node:setNodeEventEnabled(enabled, listener)
     return self
 end
 
+function Node:setTouchEnabled(enable)
+    local func = tolua.getcfunction(self, "setTouchEnabled")
+    func(self, enable)
+    if not flagNodeTouchInCocos then
+        return
+    end
+    
+    if enable then
+        self:setBaseNodeEventListener()
+    end
+end
+
 function Node:setKeypadEnabled(enable)
     if not flagNodeTouchInCocos then
         self:setKeyboardEnabled(enable)
@@ -218,6 +230,14 @@ function Node:scheduleUpdate()
     self:scheduleUpdateWithPriorityLua(listener, 0) 
 end
 
+function Node:setBaseNodeEventListener()
+    if self._baseNodeEventListener_ then return end
+    self._baseNodeEventListener_ = function(evt)
+            self:EventDispatcher(c.NODE_EVENT, evt)
+    end
+    self:registerScriptHandler(self._baseNodeEventListener_)
+end
+
 function Node:addNodeEventListener( evt, hdl, tag, priority )
     if not flagNodeTouchInCocos then
         tolua.getcfunction(self, "addNodeEventListener")(self, evt, hdl, tag, priority)
@@ -228,13 +248,7 @@ function Node:addNodeEventListener( evt, hdl, tag, priority )
 
     if not self._scriptEventListeners_ then
         self._scriptEventListeners_ = {}
-
-        local function baseNodeEventListener( evt )
-            -- print('----base Node Event: ' .. evt .. '(' .. tostring(self) .. ')')
-            self:EventDispatcher(c.NODE_EVENT, evt)
-        end
-
-        self:registerScriptHandler(baseNodeEventListener)
+        self:setBaseNodeEventListener()
     end
     local luaListeners_ = self._scriptEventListeners_
 
@@ -368,9 +382,10 @@ function Node:EventDispatcher( idx, data )
         end
     end
 
-    if flagNodeCleanup then 
+    if flagNodeCleanup then
+        obj:setTouchEnabled(false)
         obj:removeAllNodeEventListeners() 
-        self:unregisterScriptHandler()
+        obj:unregisterScriptHandler()
     end
 
     return rnval
