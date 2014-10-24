@@ -44,6 +44,17 @@ $options = array(
 				"class LuaTouchTargetNode",
 				),
 		),
+
+	"FilesNeedReplace" => array(
+			array(
+				'cocos2d.cpp',
+				"/cocos/cocos2d.cpp",
+				),
+			array(
+				"LuaEventNode.cpp",
+				"/external/lua/quick/LuaEventNode.cpp",
+				),
+		),
 );
 
 function check_cocos_ver()

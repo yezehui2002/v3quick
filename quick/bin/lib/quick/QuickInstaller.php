@@ -159,6 +159,21 @@ class QuickInstaller
         return true;
     }
 
+    private function replaceFiles()
+    {
+        $files = $this->options["FilesNeedReplace"];
+        foreach ($files as $file) 
+        {
+            $src = $this->quickPath . "/quick/lib/hotfix/" . $file[0];
+            $dst = $this->cocosPath . $file[1];
+            $this->copyFile($src, $dst);
+
+            printf("OK\n");
+        }
+
+        return true;
+    }
+
     private function setEnvFiles()
     {
         file_put_contents($this->quickPath . "/.COCOS_ROOT_PATH", $this->cocosPath);
@@ -211,6 +226,7 @@ class QuickInstaller
         $this->copyTemplate();
     	$this->copyFilesToTemplate();
         $this->modifyFiles();
+        $this->replaceFiles();
     	return 0;
     }
 
