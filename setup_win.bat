@@ -14,4 +14,6 @@ echo.
 
 call %QUICK_V3_ROOT%quick\bin\make_framework_package.bat
 
+call %QUICK_V3_ROOT%quick\bin\install_to_cocos.bat
+
 pause
