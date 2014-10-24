@@ -7,7 +7,7 @@ local EditBoxLite = import(".EditBoxLite")
 local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
 
 local CreateProjectUI = class("CreateProjectUI", function()
-        return cc.LayerColor:create(cc.c4b(56, 56, 56, 250))
+        return display.newColorLayer(cc.c4b(56, 56, 56, 250))
     end)
 
 -- settings
@@ -160,7 +160,7 @@ function CreateProjectUI:onEnter()
             if string.len(locationEditbox:getText()) > 0 and string.len(packageEditbox:getText()) > 0 then
                 createProjectbutton:setButtonLabelString("normal", "Processing ...")
                 local t = packageEditbox:getText():splitBySep('.')
-                self.projectFolder = locationEditbox:getText() .. '/' .. t[#t]
+                self.projectFolder = locationEditbox:getText() .. device.directorySeparator .. t[#t]
 
                 local projectConfig = ProjectConfig:new()
                 projectConfig:setProjectDir(self.projectFolder)

@@ -7,7 +7,7 @@ local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
 local EditBoxLite = import(".EditBoxLite")
 
 local OpenProjectUI = class("OpenProjectUI", function()
-        return cc.LayerColor:create(cc.c4b(56, 56, 56, 250))
+        return display.newColorLayer(cc.c4b(56, 56, 56, 250))
     end)
 
 -- settings
