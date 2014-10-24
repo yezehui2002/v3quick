@@ -22,21 +22,22 @@ fi
 mkdir -p "$WORKDIR"
 
 cd "$QUICK_V3_ROOT"
-git archive v3quick | tar -x -C "$WORKDIR"
+git archive v3quickcocos | tar -x -C "$WORKDIR"
 
-cd quick/player/proj.mac
+# cd quick/player/proj.mac
 
-cp -rf player3.xcodeproj/xcuserdata/USER.xcuserdatad/ player3.xcodeproj/xcuserdata/$USER.xcuserdatad/
-xcodebuild -configuration Debug \
-    CODE_SIGN_IDENTITY="Developer ID Application: $CERT" \
-    QUICK_V3_ROOT="$QUICK_V3_ROOT" \
-    -workspace player3.xcworkspace \
-    -scheme player3 \
-    -archivePath ./build \
-    archive
+# cp -rf player3.xcodeproj/xcuserdata/USER.xcuserdatad/ player3.xcodeproj/xcuserdata/$USER.xcuserdatad/
+# xcodebuild -configuration Debug \
+#     CODE_SIGN_IDENTITY="Developer ID Application: $CERT" \
+#     QUICK_V3_ROOT="$QUICK_V3_ROOT" \
+#     -workspace player3.xcworkspace \
+#     -scheme player3 \
+#     -archivePath ./build \
+#     archive
 
-mv ./build.xcarchive/Products/Applications/player3.app "$WORKDIR"
-rm -fr ./build.xcarchive
+# mv ./build.xcarchive/Products/Applications/player3.app "$WORKDIR"
+# rm -fr ./build.xcarchive
+cp player3.app "$WORKDIR"
 
 spctl -a -v "$WORKDIR/player3.app/"
 echo ""
