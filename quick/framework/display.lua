@@ -462,7 +462,13 @@ LayerColor 对象使用指定的颜色填充。
 
 ]]
 function display.newColorLayer(color)
-    return cc.LayerColor:create(color)
+    local node = display.newNode()
+    local layer = cc.LayerColor:create(color)
+    node:addChild(layer)
+    node:setTouchEnabled(true)
+    node:setTouchSwallowEnabled(true)
+
+    return node
 end
 
 --[[--

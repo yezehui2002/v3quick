@@ -3,7 +3,7 @@ local Utilitys = require("app.utilitys.Utilitys")
 local EditBoxLite = import(".EditBoxLite")
 
 local BuildProjectUI = class("BuildProjectUI", function()
-        return cc.LayerColor:create(cc.c4b(56, 56, 56, 250))
+        return display.newColorLayer(cc.c4b(56, 56, 56, 250))
     end)
 
 function BuildProjectUI:ctor(args)
