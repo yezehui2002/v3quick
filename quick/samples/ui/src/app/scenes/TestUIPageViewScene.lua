@@ -33,7 +33,7 @@ function TestUIPageViewScene:createPageView()
         --             size = 20,
         --             align = cc.ui.TEXT_ALIGN_CENTER,
         --             color = display.COLOR_BLACK})
-        content = display.newColorLayer(
+        content = cc.LayerColor:create(
             cc.c4b(math.random(250),
                 math.random(250),
                 math.random(250),
