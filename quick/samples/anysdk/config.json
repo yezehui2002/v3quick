@@ -1,12 +1,13 @@
 {
   "init_cfg": {
     "isLandscape": true,
+    "isWindowTop": false,
     "name": "anysdk",
     "width": 960,
     "height": 640,
     "entry": "src/main.lua",
     "consolePort": 6010,
-    "debugPort": 0
+    "uploadPort": 6020
   },
   "simulator_screen_size": [
     {
