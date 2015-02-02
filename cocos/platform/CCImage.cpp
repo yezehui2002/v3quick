@@ -484,7 +484,7 @@ Image::~Image()
 extern Data xxtea_file_get_data(const std::string& filename);
 #define GET_DATA_FROM_IMAGE_FILE(p) xxtea_file_get_data(p)
 #else
-#define GET_DATA_FROM_IMAGE_FILE(p) FileUtils::getInstance()->fullPathForFilename(p)
+#define GET_DATA_FROM_IMAGE_FILE(p) FileUtils::getInstance()->getDataFromFile(p)
 #endif
 
 bool Image::initWithImageFile(const std::string& path)
