@@ -16,11 +16,22 @@
 #include "lua_extensions/lua_extensions_more.h"
 #include "PlayerProtocol.h"
 
+#include "Net.h"
+
 using namespace CocosDenshion;
+
 
 USING_NS_CC;
 USING_NS_CC_EXTRA;
 using namespace std;
+
+extern int luaopen_net (lua_State* tolua_S);
+extern int luaopen_update (lua_State* tolua_S);
+
+void registerLuas(lua_State* tolua_S)
+{
+	luaopen_net(tolua_S);
+}
 
 static void quick_module_register(lua_State *L)
 {
@@ -89,6 +100,8 @@ bool AppDelegate::applicationDidFinishLaunching()
 
     // If you want to use Quick-Cocos2d-X, please uncomment below code
     quick_module_register(L);
+
+	director->setNotificationNode(Net::getInstance());
 
     LuaStack* stack = engine->getLuaStack();
     stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));

@@ -68,7 +68,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\Classes;$(ProjectDir)..\Classes\runtime;$(ProjectDir)..\..\lib\quick-src;$(ProjectDir)..\..\lib\quick-src\extra;$(EngineRoot)external\protobuf-lite\win32;$(EngineRoot)external\protobuf-lite\src;$(EngineRoot)external\win32-specific\zlib\include;$(EngineRoot)cocos\scripting\lua-bindings\auto;$(EngineRoot)cocos\scripting\lua-bindings\manual;$(EngineRoot)cocos\audio\include;$(EngineRoot)external;$(EngineRoot)external\lua\lua;$(EngineRoot)external\lua\tolua;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;$(EngineRoot);$(EngineRoot)external\curl\include\win32;$(EngineRoot)external\glfw3\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\Classes;$(ProjectDir)..\Classes\runtime;$(ProjectDir)..\..\lib\quick-src;$(ProjectDir)..\..\lib\quick-src\extra;$(EngineRoot)external\protobuf-lite\win32;$(EngineRoot)external\protobuf-lite\src;$(EngineRoot)external\win32-specific\zlib\include;$(EngineRoot)cocos\scripting\lua-bindings\auto;$(EngineRoot)cocos\scripting\lua-bindings\manual;$(EngineRoot)cocos\audio\include;$(EngineRoot)external;$(EngineRoot)external\lua\lua;$(EngineRoot)external\lua\tolua;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;$(EngineRoot);$(EngineRoot)external\curl\include\win32;$(EngineRoot)external\glfw3\include\win32;$(EngineRoot)external\libpomelo\include;$(EngineRoot)external\libpomelo\deps\uv\include;$(EngineRoot)external\libpomelo\deps\uv\include\uv-private;$(EngineRoot)external\libpomelo\deps\jansson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -89,7 +89,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libcurl_imp.lib;websockets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libcurl_imp.lib;websockets.lib;Psapi.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(ProjectDir)../../../runtime/win32/$(TargetName).pdb</ProgramDatabaseFile>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
@@ -193,6 +193,7 @@ xcopy /Y /Q "$(TargetPath)" "$(ProjectDir)..\win32\"</Command>
     <ClInclude Include="..\..\lib\quick-src\extra\nanovg\nanovg\stb_truetype.h" />
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\ConfigParser.h" />
+    <ClInclude Include="..\Classes\Net.h" />
     <ClInclude Include="..\Classes\PlayerEditBoxServiceProtocol.h" />
     <ClInclude Include="..\Classes\PlayerFileDialogServiceProtocol.h" />
     <ClInclude Include="..\Classes\PlayerLuaCore.h" />
@@ -287,6 +288,7 @@ xcopy /Y /Q "$(TargetPath)" "$(ProjectDir)..\win32\"</Command>
     <ClInclude Include="..\Classes\runtime\Protos.pb.h" />
     <ClInclude Include="..\Classes\runtime\ResData.h" />
     <ClInclude Include="..\Classes\runtime\Runtime.h" />
+    <ClInclude Include="..\Classes\ThreadSafeQueue.h" />
     <ClInclude Include="..\Classes\UncaughtExceptionHandler.h" />
     <ClInclude Include="..\Classes\VisibleRect.h" />
     <ClInclude Include="PlayerEditBoxServiceWin.h" />
@@ -320,6 +322,8 @@ xcopy /Y /Q "$(TargetPath)" "$(ProjectDir)..\win32\"</Command>
     <ClCompile Include="..\..\lib\quick-src\extra\nanovg\nanovg\nanovg.c" />
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\ConfigParser.cpp" />
+    <ClCompile Include="..\Classes\Net.cpp" />
+    <ClCompile Include="..\Classes\NetTolua.cpp" />
     <ClCompile Include="..\Classes\PlayerLuaCore.cpp" />
     <ClCompile Include="..\Classes\PlayerLuaCoreManual.cpp" />
     <ClCompile Include="..\Classes\PlayerMenuServiceProtocol.cpp" />
@@ -471,6 +475,15 @@ xcopy /Y /Q "$(TargetPath)" "$(ProjectDir)..\win32\"</Command>
   <ItemGroup>
     <ProjectReference Include="..\..\..\cocos\scripting\lua-bindings\proj.win32\libluacocos2d.vcxproj">
       <Project>{9f2d6ce6-c893-4400-b50c-6db70cc2562f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\libpomelo\deps\jansson\jansson.vcxproj">
+      <Project>{3da9e8b6-0455-d04b-1985-3748bf80674f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\libpomelo\deps\uv\libuv.vcxproj">
+      <Project>{4e582da0-68e2-8a52-01de-340b47888102}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\libpomelo\libpomelo.vcxproj">
+      <Project>{543f80b6-3dff-a8dd-be51-fb9314d6b234}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
